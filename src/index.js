@@ -58,11 +58,17 @@ function addBaseConfiguration(options, addBase, addUtilities) {
 
 function addIcons(options, addBase, addUtilities) {
 
-    const manifestName = `v${options.version}${options.pro ? 'pro' : 'free'}`;
-    const manifest = manifests[manifestName];
-    if (!manifest) {
-        throw Error(`Could not find manifest for ${manifestName}`);
+    const manifest = getManifest(options.version, options.pro ? 'pro' : 'free');
+    addIconsFromManifest(addUtilities, manifest, options.duotone);
+
+    if (options.brands) {
+        const brandManifest = getManifest(options.version, 'brands');
+        addIconsFromManifest(addUtilities, brandManifest, false);
     }
+
+}
+
+function addIconsFromManifest(addUtilities, manifest, addDuotone) {
 
     for(const [key, value] of Object.entries(manifest)) {
 
@@ -73,7 +79,7 @@ function addIcons(options, addBase, addUtilities) {
             }
         });
 
-        if (options.duotone) {
+        if (addDuotone) {
             const duoClassName = `.fad.fa-${key}:after`;
             addUtilities({
                 [duoClassName]: {
@@ -83,6 +89,18 @@ function addIcons(options, addBase, addUtilities) {
         }
 
     }
+
+}
+
+function getManifest(version, name) {
+ 
+    const manifestName = `v${version}${name}`;
+    const manifest = manifests[manifestName];
+    if (!manifest) {
+        throw Error(`Could not find manifest for ${manifestName}`);
+    }
+
+    return manifest;
 
 }
 
