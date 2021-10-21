@@ -70,7 +70,7 @@ function addIcons(options, addBase, addUtilities) {
 
 }
 
-function addIconsFromManifest(addUtilities, manifest, addDuotone) {
+function addIconsFromManifest(addUtilities, manifest, addDuotone, version) {
 
     for(const [key, value] of Object.entries(manifest)) {
 
@@ -83,9 +83,13 @@ function addIconsFromManifest(addUtilities, manifest, addDuotone) {
 
         if (addDuotone) {
             const duoClassName = `.fad.fa-${key}:after`;
+            const duoClassValue = version === 5 ? 
+                '\\10' + value.substring(2) :
+                value.repeat(2);
+
             addUtilities({
                 [duoClassName]: {
-                    content: `"${value}${value}"`
+                    content: `"${duoClassValue}"`
                 }
             });
         }
