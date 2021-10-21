@@ -60,10 +60,19 @@ function addIcons(options, addUtilities) {
     const type = options.pro ? 'pro' : 'free';
     
     for(const icon of manifest.release.icons) {
+
+        let add = false;
+        let duotone = icon.membership[type].includes('duotone');
+
         for(const style of icon.membership[type]) {
             if (options[style]) {
-                addIconClasses(addUtilities, icon.id, icon.unicode, style === 'duotone', options.version);
+                add = true;
+                break;
             }
+        }
+
+        if (add) {
+            addIconClasses(addUtilities, icon.id, icon.unicode, duotone, options.version);
         }
     }
 }
@@ -78,10 +87,10 @@ function addIconClasses(addUtilities, id, unicode, duotone, version) {
     });
 
     if (duotone) {
-        const duoClassName = `.fad.fa-${key}:after`;
+        const duoClassName = `.fad.fa-${id}:after`;
         const duoClassValue = version === 5 ? 
             '\\10' + unicode :
-            '\\' + unicode.repeat(2);
+            ('\\' + unicode).repeat(2);
 
         addUtilities({
             [duoClassName]: {
