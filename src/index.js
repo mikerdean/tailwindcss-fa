@@ -1,8 +1,10 @@
 const plugin = require('tailwindcss/plugin');
 
 const manifests = Object.freeze({
+    v5brands: require('./v5brands.json'),
     v5free: require('./v5free.json'),
     v5pro: require('./v5pro.json'),
+    v6brands: require('./v6brands.json'),
     v6free: require('./v6free.json'),
     v6pro: require('./v6pro.json')
 });
