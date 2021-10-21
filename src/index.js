@@ -1,12 +1,8 @@
 const plugin = require('tailwindcss/plugin');
 
 const manifests = Object.freeze({
-    v5brands: require('./v5brands.json'),
-    v5free: require('./v5free.json'),
-    v5pro: require('./v5pro.json'),
-    v6brands: require('./v6brands.json'),
-    v6free: require('./v6free.json'),
-    v6pro: require('./v6pro.json')
+    v5: require('./v5.json'),
+    v6: require('./v6.json')
 });
 
 const defaultOptions = Object.freeze({
@@ -28,7 +24,7 @@ module.exports = plugin.withOptions(function(options) {
         const opts = Object.assign({}, defaultOptions, options);
 
         addBaseConfiguration(opts, addBase, addUtilities);
-        addIcons(opts, addBase, addUtilities);
+        addIcons(opts, addUtilities);
 
     };
 
@@ -58,49 +54,46 @@ function addBaseConfiguration(options, addBase, addUtilities) {
     fontClasses.forEach(x => addUtilities(x));
 }
 
-function addIcons(options, addBase, addUtilities) {
+function addIcons(options, addUtilities) {
 
-    const manifest = getManifest(options.version, options.pro ? 'pro' : 'free');
-    addIconsFromManifest(addUtilities, manifest, options.pro && options.duotone, options.version);
-
-    if (options.brands) {
-        const brandManifest = getManifest(options.version, 'brands');
-        addIconsFromManifest(addUtilities, brandManifest, false, options.version);
+    const manifest = getManifest(options.version);
+    const type = options.pro ? 'pro' : 'free';
+    
+    for(const icon of manifest.release.icons) {
+        for(const style of icon.membership[type]) {
+            if (options[style]) {
+                addIconClasses(addUtilities, icon.id, icon.unicode, style === 'duotone', options.version);
+            }
+        }
     }
-
 }
 
-function addIconsFromManifest(addUtilities, manifest, addDuotone, version) {
+function addIconClasses(addUtilities, id, unicode, duotone, version) {
 
-    for(const [key, value] of Object.entries(manifest)) {
+    const className = `.fa-${id}:before`;
+    addUtilities({
+        [className]: {
+            content: `"\\${unicode}"`
+        }
+    });
 
-        const className = `.fa-${key}:before`;
+    if (duotone) {
+        const duoClassName = `.fad.fa-${key}:after`;
+        const duoClassValue = version === 5 ? 
+            '\\10' + unicode :
+            '\\' + unicode.repeat(2);
+
         addUtilities({
-            [className]: {
-                content: `"${value}"`
+            [duoClassName]: {
+                content: `"${duoClassValue}"`
             }
         });
-
-        if (addDuotone) {
-            const duoClassName = `.fad.fa-${key}:after`;
-            const duoClassValue = version === 5 ? 
-                '\\10' + value.substring(2) :
-                value.repeat(2);
-
-            addUtilities({
-                [duoClassName]: {
-                    content: `"${duoClassValue}"`
-                }
-            });
-        }
-
     }
-
 }
 
-function getManifest(version, name) {
+function getManifest(version) {
  
-    const manifestName = `v${version}${name}`;
+    const manifestName = `v${version}`;
     const manifest = manifests[manifestName];
     if (!manifest) {
         throw Error(`Could not find manifest for ${manifestName}`);
