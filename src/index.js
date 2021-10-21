@@ -73,6 +73,15 @@ function addIcons(options, addBase, addUtilities) {
             }
         });
 
+        if (options.duotone) {
+            const duoClassName = `.fad.fa-${key}:after`;
+            addUtilities({
+                [duoClassName]: {
+                    content: `"${value}${value}"`
+                }
+            });
+        }
+
     }
 
 }

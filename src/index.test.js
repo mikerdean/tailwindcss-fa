@@ -12,7 +12,6 @@ test('plugin with default settings', async t => {
 
     const result = await css.process('@tailwind base;\n@tailwind utilities;', { from: undefined });
 
-    console.log(result.css);
     t.truthy(result.css);
 
     t.is(result.root.nodes[0].type, 'atrule');
