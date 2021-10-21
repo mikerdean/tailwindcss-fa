@@ -61,11 +61,11 @@ function addBaseConfiguration(options, addBase, addUtilities) {
 function addIcons(options, addBase, addUtilities) {
 
     const manifest = getManifest(options.version, options.pro ? 'pro' : 'free');
-    addIconsFromManifest(addUtilities, manifest, options.duotone);
+    addIconsFromManifest(addUtilities, manifest, options.pro && options.duotone, options.version);
 
     if (options.brands) {
         const brandManifest = getManifest(options.version, 'brands');
-        addIconsFromManifest(addUtilities, brandManifest, false);
+        addIconsFromManifest(addUtilities, brandManifest, false, options.version);
     }
 
 }
