@@ -1,5 +1,12 @@
 const plugin = require('tailwindcss/plugin');
 
+const manifests = Object.freeze({
+    v5free: require('./v5free.json'),
+    v5pro: require('./v5pro.json'),
+    v6free: require('./v6free.json'),
+    v6pro: require('./v6pro.json')
+});
+
 const defaultOptions = Object.freeze({
     brands: false,
     duotone: false,
@@ -12,16 +19,18 @@ const defaultOptions = Object.freeze({
     version: 6
 });
 
-module.exports = function(options) {
+module.exports = plugin.withOptions(function(options) {
+    
+    return function({ addBase, addUtilities }) {
 
-    const opts = Object.assign({}, defaultOptions, options);
-    // validate options here?
+        const opts = Object.assign({}, defaultOptions, options);
 
-    return plugin(({ addBase, addUtilities }) => {
         addBaseConfiguration(opts, addBase, addUtilities);
-    });
+        addIcons(opts, addBase, addUtilities);
 
-};
+    };
+
+});
 
 function addBaseConfiguration(options, addBase, addUtilities) {
 
@@ -29,8 +38,7 @@ function addBaseConfiguration(options, addBase, addUtilities) {
     const fontFaces = [];
     const fontClasses = [];
 
-    for (let key in fontConfiguration) {
-        const type = fontConfiguration[key];
+    for (const [key, type] of Object.entries(fontConfiguration)) {
 
         if (!options[key]) {
             continue;
@@ -48,6 +56,27 @@ function addBaseConfiguration(options, addBase, addUtilities) {
     fontClasses.forEach(x => addUtilities(x));
 }
 
+function addIcons(options, addBase, addUtilities) {
+
+    const manifestName = `v${options.version}${options.pro ? 'pro' : 'free'}`;
+    const manifest = manifests[manifestName];
+    if (!manifest) {
+        throw Error(`Could not find manifest for ${manifestName}`);
+    }
+
+    for(const [key, value] of Object.entries(manifest)) {
+
+        const className = `.fa-${key}:before`;
+        addUtilities({
+            [className]: {
+                content: `"${value}"`
+            }
+        });
+
+    }
+
+}
+
 function createFontClass(className, fontFamily, fontWeight) {
     return {
         [className]: {
@@ -62,7 +91,7 @@ function createFontFace(fontFamily, name, fontWeight, path, fontStyle = 'normal'
     const filename = `${path || ''}fa-${name}-${fontWeight}`;
 
     return {
-        fontFamily,
+        fontFamily: `"${fontFamily}"`,
         fontWeight,
         fontStyle,
         fontDisplay,
