@@ -63,7 +63,7 @@ function addIcons(options, manifest, addUtilities) {
     for(const icon of manifest.release.icons) {
 
         let add = false;
-        let duotone = icon.membership[type].includes('duotone');
+        let duotone = options.duotone && icon.membership[type].includes('duotone');
 
         for(const style of icon.membership[type]) {
             if (options[style]) {
