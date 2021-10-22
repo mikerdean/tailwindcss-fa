@@ -1,9 +1,10 @@
+const manifests = require('../manifests/index.js');
 const plugin = require('tailwindcss/plugin');
 
-const manifests = Object.freeze({
-    v5: require('./v5.json'),
-    v6: require('./v6.json')
-});
+const latest = (function() {
+    const keys = Object.keys(manifests);
+    return keys[keys.length - 1];
+})();
 
 const defaultOptions = Object.freeze({
     brands: false,
@@ -14,17 +15,18 @@ const defaultOptions = Object.freeze({
     regular: true,
     solid: true,
     thin: false,
-    version: 6
+    version: latest
 });
 
 module.exports = plugin.withOptions(function(options) {
     
     return function({ addBase, addUtilities }) {
 
-        const opts = Object.assign({}, defaultOptions, options);
+        const opts = createOptionsObject(options);
+        const manifest = getManifest(opts.version);
 
         addBaseConfiguration(opts, addBase, addUtilities);
-        addIcons(opts, addUtilities);
+        addIcons(opts, manifest, addUtilities);
 
     };
 
@@ -54,9 +56,8 @@ function addBaseConfiguration(options, addBase, addUtilities) {
     fontClasses.forEach(x => addUtilities(x));
 }
 
-function addIcons(options, addUtilities) {
+function addIcons(options, manifest, addUtilities) {
 
-    const manifest = getManifest(options.version);
     const type = options.pro ? 'pro' : 'free';
     
     for(const icon of manifest.release.icons) {
@@ -88,7 +89,7 @@ function addIconClasses(addUtilities, id, unicode, duotone, version) {
 
     if (duotone) {
         const duoClassName = `.fad.fa-${id}:after`;
-        const duoClassValue = version === 5 ? 
+        const duoClassValue = this.major === 5 ? 
             '\\10' + unicode :
             ('\\' + unicode).repeat(2);
 
@@ -102,10 +103,9 @@ function addIconClasses(addUtilities, id, unicode, duotone, version) {
 
 function getManifest(version) {
  
-    const manifestName = `v${version}`;
-    const manifest = manifests[manifestName];
+    const manifest = manifests[version];
     if (!manifest) {
-        throw Error(`Could not find manifest for ${manifestName}`);
+        throw Error(`Could not find manifest for ${version}`);
     }
 
     return manifest;
@@ -136,7 +136,7 @@ function createFontFace(fontFamily, name, fontWeight, path, fontStyle = 'normal'
 
 function createFontConfiguration(options) {
 
-    const fontName = `Font Awesome ${options.version}`;
+    const fontName = `Font Awesome ${options.major}`;
     const fontFamily = `${fontName} ${options.pro ? 'Pro' : 'Free'}`;
 
     return {
@@ -177,4 +177,18 @@ function createFontConfiguration(options) {
             pro: true
         }
     };
+}
+
+function createOptionsObject(options) {
+
+    const opts = Object.assign({}, defaultOptions, options);
+
+    Object.defineProperty(opts, 'major', {
+        get() {
+            return parseInt(this.version.substring(0, this.version.indexOf('.')));
+        }
+    });
+
+    return opts;
+
 }

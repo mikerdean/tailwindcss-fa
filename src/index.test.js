@@ -61,7 +61,7 @@ test('plugin with default settings for version 5', async t => {
 
     const css = postcss(tailwind({
         corePlugins: false,
-        plugins: [ fontawesome({ version: 5 }) ]
+        plugins: [ fontawesome({ version: '5.15.4' }) ]
     }));
 
     const result = await css.process('@tailwind base;\n@tailwind utilities;', { from: undefined });
