@@ -4,13 +4,13 @@ This plugin for Tailwind adds Font Awesome font faces and classes to your CSS ou
 ## Installation
 
 ```
-npm install --save-dev tailwindcss-fa
+npm install --save-dev https://github.com/mikerdean/tailwindcss-fa.git
 ```
 
 Or if you use __yarn__ then:
 
 ```
-yarn add --dev tailwindcss-fa
+yarn add --dev https://github.com/mikerdean/tailwindcss-fa.git
 ```
 
 You will require the Font Awesome fonts to be available in the file system for your project.
