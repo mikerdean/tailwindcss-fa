@@ -115,7 +115,7 @@ function getManifest(version) {
 function createFontClass(className, fontFamily, fontWeight) {
     return {
         [className]: {
-            fontFamily,
+            fontFamily: `"${fontFamily}"`,
             fontWeight 
         }
     };
