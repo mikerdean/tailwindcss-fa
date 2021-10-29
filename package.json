@@ -1,6 +1,6 @@
 {
   "name": "tailwindcss-fa",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "TailwindCSS plugin for fontawesome v5 and v6 (free and pro versions).",
   "main": "src/index.js",
   "author": "Mike Dean",

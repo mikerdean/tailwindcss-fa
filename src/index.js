@@ -49,11 +49,25 @@ function addBaseConfiguration(options, addBase, addUtilities) {
         }
 
         fontFaces.push(createFontFace(type.fontFamily, key, type.fontWeight, options.path));
-        fontClasses.push(createFontClass(type.className, type.fontFamily, type.fontWeight));
+        fontClasses.push(createFontClass(type.className, type.fontFamily, type.fontWeight, type.position));
     }
 
     addBase({ '@font-face': fontFaces });
     fontClasses.forEach(x => addUtilities(x));
+
+    if (options.pro && options.duotone) {
+        addUtilities({
+            '.fad::before': {
+                position: 'absolute',
+                color: 'inherit',
+                opacity: 1
+            },
+            '.fad::after': {
+                color: 'inherit',
+                opacity: .4
+            }
+        });
+    }
 }
 
 function addIcons(options, manifest, addUtilities) {
@@ -112,11 +126,12 @@ function getManifest(version) {
 
 }
 
-function createFontClass(className, fontFamily, fontWeight) {
+function createFontClass(className, fontFamily, fontWeight, position) {
     return {
         [className]: {
             fontFamily: `"${fontFamily}"`,
-            fontWeight 
+            fontWeight,
+            position
         }
     };
 }
@@ -150,7 +165,8 @@ function createFontConfiguration(options) {
             className: '.fad',
             fontFamily: `${fontName} Duotone`,
             fontWeight: 900,
-            pro: true
+            pro: true,
+            position: 'relative'
         },
         light: {
             className: '.fal',
